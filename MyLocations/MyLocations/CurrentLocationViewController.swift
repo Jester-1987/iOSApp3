@@ -13,7 +13,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        updateLabels()
     }
 
     @IBOutlet weak var messageLabel: UILabel!
@@ -22,6 +22,8 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var tagButton: UIButton!
     @IBOutlet weak var getButton: UIButton!
+    
+    var location: CLLocation?
     
     // MARK: - Actions
     @IBAction func getLocation() {
@@ -44,7 +46,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
         _ manager: CLLocationManager,
         didFailWithError error: Error
     ) {
-        print("didFailWithError \(error.localizedDescription)")
+        print("didFailWithError \(error.localizedDescription)")     
     }
     
     func locationManager(
@@ -53,6 +55,27 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
     ) {
         let newLocation = locations.last!
         print("didUpdateLocations \(newLocation)")
+        location = newLocation
+        updateLabels()
+    }
+    
+    func updateLabels() {
+      if let location = location {
+        latitudeLabel.text = String(
+          format: "%.8f",
+          location.coordinate.latitude)
+        longitudeLabel.text = String(
+          format: "%.8f",
+          location.coordinate.longitude)
+        tagButton.isHidden = false
+        messageLabel.text = ""
+      } else {
+        latitudeLabel.text = ""
+        longitudeLabel.text = ""
+        addressLabel.text = ""
+        tagButton.isHidden = true
+        messageLabel.text = "Tap 'Get My Location' to Start"
+      }
     }
     
     // MARK: - Helper Methods
